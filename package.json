@@ -9,12 +9,19 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.71",
+    "@ai-sdk/react": "^3.0.207",
     "@base-ui/react": "^1.5.0",
+    "@prisma/client": "^7.8.0",
     "@vercel/analytics": "1.6.1",
+    "ai": "^6.0.205",
+    "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.16.0",
     "next": "16.2.6",
+    "openai": "^6.42.0",
+    "prisma": "^7.8.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "shadcn": "^4.8.0",
@@ -29,5 +36,11 @@
     "postcss": "^8.5",
     "tailwindcss": "^4.2.0",
     "typescript": "5.7.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp",
+      "msw"
+    ]
   }
 }

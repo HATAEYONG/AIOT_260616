@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Video {
+  id               String       @id @default(cuid())
+  youtubeVideoId   String       @unique @map("youtube_video_id")
+  title            String
+  url              String
+  publishedAt      DateTime?    @map("published_at")
+  duration         String?
+  thumbnailUrl     String?      @map("thumbnail_url")
+  viewCount        Int?         @map("view_count")
+  description      String?      @db.Text
+  transcriptStatus String       @default("pending") @map("transcript_status")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+  transcripts      Transcript[]
+  chunks           Chunk[]
+
+  @@map("videos")
+}
+
+model Transcript {
+  id         String   @id @default(cuid())
+  videoId    String   @map("video_id")
+  video      Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  fullText   String   @map("full_text") @db.Text
+  language   String   @default("ko")
+  sourceType String   @default("manual") @map("source_type")
+  createdAt  DateTime @default(now()) @map("created_at")
+  chunks     Chunk[]
+
+  @@map("transcripts")
+}
+
+model Chunk {
+  id           String      @id @default(cuid())
+  videoId      String      @map("video_id")
+  video        Video       @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  transcriptId String?     @map("transcript_id")
+  transcript   Transcript? @relation(fields: [transcriptId], references: [id])
+  chunkIndex   Int         @map("chunk_index")
+  text         String      @db.Text
+  startTime    String?     @map("start_time")
+  endTime      String?     @map("end_time")
+  embedding    Float[]
+  topics       String[]
+  entities     String[]
+  createdAt    DateTime    @default(now()) @map("created_at")
+
+  @@map("chunks")
+}
+
+model AgentLog {
+  id           String   @id @default(cuid())
+  agentType    String   @map("agent_type")
+  input        String?  @db.Text
+  output       String?  @db.Text
+  status       String   @default("success")
+  errorMessage String?  @map("error_message") @db.Text
+  metadata     Json?
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("agent_logs")
+}
+
+model ApiKey {
+  id           String   @id @default(cuid())
+  provider     String   @unique
+  encryptedKey String   @map("encrypted_key") @db.Text
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("api_keys")
+}
+
+model ChatSession {
+  id        String        @id @default(cuid())
+  messages  ChatMessage[]
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id        String      @id @default(cuid())
+  sessionId String      @map("session_id")
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  role      String
+  content   String      @db.Text
+  sources   Json?
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  @@map("chat_messages")
+}
