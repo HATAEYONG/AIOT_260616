@@ -21,7 +21,15 @@
       "Bash(npx prisma *)",
       "Bash(pnpm build *)",
       "Bash(node -e \"const ai = require\\('ai'\\); console.log\\(Object.keys\\(ai\\).filter\\(k=>k.includes\\('Chat'\\)||k.includes\\('chat'\\)\\)\\)\")",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(vercel whoami *)",
+      "Bash(vercel env *)",
+      "Bash(vercel link *)",
+      "Bash(vercel --prod --yes)",
+      "Bash(vercel deploy *)",
+      "Bash(node -e ' *)"
     ]
   }
 }

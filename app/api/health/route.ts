@@ -62,10 +62,16 @@ async function checkDatabase(): Promise<{ ok: boolean; latency: number; detail: 
   if (!url) return { ok: false, latency: 0, detail: 'DATABASE_URL 미설정' }
   const start = Date.now()
   try {
-    const { prisma } = await import('@/lib/prisma')
-    await prisma.$queryRaw`SELECT 1`
+    const { getPool } = await import('@/lib/db')
+    const pool = getPool()
+    const { rows } = await pool.query(
+      `SELECT
+        (SELECT COUNT(*) FROM videos) AS videos,
+        (SELECT COUNT(*) FROM chunks) AS chunks`
+    )
     const latency = Date.now() - start
-    return { ok: true, latency, detail: 'PostgreSQL 연결 성공' }
+    const { videos, chunks } = rows[0]
+    return { ok: true, latency, detail: `영상 ${videos}개 · 청크 ${chunks}개` }
   } catch (e: any) {
     return { ok: false, latency: Date.now() - start, detail: e.message?.split('\n')[0] ?? '연결 실패' }
   }
